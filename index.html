@@ -411,7 +411,9 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div style="display:flex;justify-content:space-around;margin-bottom:14px" id="moodrow"></div>
     <div style="text-align:center;color:#5C4FF6;font-size:0.8rem;margin-bottom:12px" id="moodlbl">Neutro</div>
     <div class="lbl">Nota (opcional)</div>
-    <textarea rows="3" id="animonota" placeholder="¿Qué influyó hoy?" oninput="saveNota()"></textarea>
+    <textarea rows="3" id="animonota" placeholder="¿Qué influyó hoy?"></textarea>
+    <button class="btn" onclick="saveAnimo()" style="margin-top:12px">Guardar</button>
+    <div id="animo-ok" style="display:none;text-align:center;color:var(--green);font-size:0.85rem;margin-top:8px;font-weight:600">✓ Guardado</div>
   </div>
   <div class="chartwrap"><div class="lbl" style="padding:0 4px 6px">Ánimo 7 días</div><canvas id="can" height="110"></canvas></div>
   <div class="card"><div class="lbl" style="margin-bottom:6px">Notas de la semana</div><div id="animhist"></div></div>
@@ -1393,12 +1395,29 @@ var MOODS=[{v:1,e:'😞',l:'Bajo'},{v:2,e:'😕',l:'Regular'},{v:3,e:'😐',l:'N
 var animV=3;
 function setAnimo(v){
   animV=v;
-  var nota=el('animonota').value||'';
-  data.animo[today()]={val:v,nota:nota}; saveD(); renderAnimo();
+  var mh='', i;
+  for(i=0;i<MOODS.length;i++){
+    var m=MOODS[i], c=animV===m.v?' on':'';
+    mh+='<button class="moodbtn'+c+'" onclick="setAnimo('+m.v+')">'+m.e+'</button>';
+  }
+  set('moodrow',mh);
+  setText('moodlbl', MOODS[animV-1]?MOODS[animV-1].l:'');
 }
-function saveNota(){
+function saveAnimo(){
   var nota=el('animonota').value||'';
   data.animo[today()]={val:animV,nota:nota}; saveD();
+  var db=el('animodelbtn'); if(db) db.style.display='inline-block';
+  // Update historial inline without re-rendering whole page
+  var days=getDays(14), h='', found=false, i;
+  for(i=0;i<days.length;i++){
+    var d=days[i]; if(!data.animo[d]||!data.animo[d].nota) continue; found=true;
+    var em=MOODS[data.animo[d].val-1]?MOODS[data.animo[d].val-1].e:'';
+    h+='<div class="hrow"><span style="color:var(--text3);margin-right:8px">'+fmt(d)+'</span>'+em+' <span style="color:var(--text2);margin-left:6px">'+data.animo[d].nota+'</span></div>';
+  }
+  set('animhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin notas</span>');
+  drawLine('can', getDays(7).map(function(d){ return {l:fmt(d),v:data.animo[d]?data.animo[d].val:null}; }), '#5C4FF6');
+  var ok=el('animo-ok');
+  if(ok){ ok.style.display='block'; setTimeout(function(){ ok.style.display='none'; },2000); }
 }
 function renderAnimo(){
   var t=today(), an=data.animo[t];
@@ -1410,10 +1429,9 @@ function renderAnimo(){
     mh+='<button class="moodbtn'+c+'" onclick="setAnimo('+m.v+')">'+m.e+'</button>';
   }
   set('moodrow',mh);
-  var lbl=MOODS[animV-1]?MOODS[animV-1].l:'';
-  setText('moodlbl',lbl);
+  setText('moodlbl', MOODS[animV-1]?MOODS[animV-1].l:'');
   drawLine('can', getDays(7).map(function(d){ return {l:fmt(d),v:data.animo[d]?data.animo[d].val:null}; }), '#5C4FF6');
-  var days=getDays(7), h='', found=false;
+  var days=getDays(14), h='', found=false;
   for(i=0;i<days.length;i++){
     var d=days[i]; if(!data.animo[d]||!data.animo[d].nota) continue; found=true;
     var em=MOODS[data.animo[d].val-1]?MOODS[data.animo[d].val-1].e:'';
