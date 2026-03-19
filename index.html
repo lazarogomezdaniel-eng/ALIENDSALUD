@@ -10,7 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Salud 360 Senior"/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/></noscript>
 <style>
 :root{
   --bg:#F5F6FA;--surface:#FFFFFF;--surface2:#F0F1F7;
@@ -24,7 +25,7 @@
   --radius:14px;--radiusS:10px;--shadow:0 2px 12px rgba(0,0,0,.07);--shadowM:0 4px 20px rgba(0,0,0,.10);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--page-bg,var(--bg));min-height:100%;font-family:'DM Sans',system-ui,sans-serif;color:var(--text);font-size:1rem;-webkit-font-smoothing:antialiased}
+html,body{background:var(--page-bg,var(--bg));min-height:100%;font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--text);font-size:1rem;-webkit-font-smoothing:antialiased}
 body{max-width:480px;margin:0 auto;padding-bottom:90px}
 
 /* NAV */
@@ -247,6 +248,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   <div id="evo-meditacion" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">🧘 Meditación (min)</div><canvas id="ca-meditacion" height="80"></canvas></div>
   <div id="evo-ayuno" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">⏲️ Ayuno (h)</div><canvas id="ca-ayuno" height="80"></canvas></div>
   <div id="evo-sol" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">☀️ Sol (min)</div><canvas id="ca-sol" height="80"></canvas></div>
+  <div id="evo-tension" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">🪀 Tensión (mmHg)</div><canvas id="ca-tension" height="80"></canvas></div>
 </div>
 
 <div id="pg-peso" class="page">
@@ -322,15 +324,13 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 
   <!-- Registros del día — debajo -->
   <div id="ejhoy" class="card" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="lbl" style="margin-bottom:0">Registros de hoy</div>
-      <button onclick="borrarHoy('ejercicio','renderEj')" class="delbtn">✕ Borrar día</button>
-    </div>
+    <div class="lbl" style="margin-bottom:8px">Registros de hoy</div>
     <div id="ejlista"></div>
     <div id="ejresumen" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text2)"></div>
   </div>
 
   <div class="chartwrap"><div class="lbl" id="pclbl" style="padding:0 4px 6px">Pasos 7 días</div><canvas id="cpa" height="100"></canvas></div>
+  <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="ejhist"></div></div>
 </div>
 
 <div id="pg-sueno" class="page">
@@ -378,7 +378,6 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   </div>
   <div class="card" style="text-align:center">
     <div style="display:flex;justify-content:flex-end;margin-bottom:-8px">
-      <button onclick="borrarHoy('agua','renderAgua')" class="delbtn" id="aguadelbtn" style="display:none">✕ Borrar</button>
     </div>
     <div class="lbl" id="aglbl2">Vasos hoy (250 ml)</div>
     <div style="font-size:58px;font-weight:300;color:var(--blue);line-height:1.2;padding:8px 0">
@@ -430,10 +429,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 
   <!-- Ayunos de hoy -->
   <div class="card" id="ayhoy" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="lbl" style="margin-bottom:0">Hoy</div>
-      <button onclick="borrarHoy('ayuno','renderAyuno')" class="delbtn">✕ Borrar día</button>
-    </div>
+    <div class="lbl" style="margin-bottom:8px">Hoy</div>
     <div id="aylista"></div>
     <div id="ayresumen" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text2)"></div>
   </div>
@@ -529,10 +525,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 
   <!-- Sesiones de hoy -->
   <div id="medit-hoy" class="card" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="lbl" style="margin-bottom:0">Hoy</div>
-      <button onclick="borrarHoy('meditacion','renderMedit')" class="delbtn">✕ Borrar día</button>
-    </div>
+    <div class="lbl" style="margin-bottom:8px">Hoy</div>
     <div id="medit-lista"></div>
     <div id="medit-total" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text2)"></div>
   </div>
@@ -558,7 +551,11 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
       <div class="lbl" style="margin-bottom:0">Meta diaria</div>
-      <div style="display:flex;gap:6px" id="medit-metas"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="chgMetaMedit(-5)" class="ybtn" style="width:32px;height:32px;font-size:1rem;padding:0;min-height:32px;min-width:32px">−</button>
+        <span id="medit-meta-val" style="font-size:0.95rem;font-weight:700;color:var(--accent);min-width:44px;text-align:center">10 min</span>
+        <button onclick="chgMetaMedit(5)" class="ybtn" style="width:32px;height:32px;font-size:1rem;padding:0;min-height:32px;min-width:32px">+</button>
+      </div>
     </div>
     <div style="background:var(--surface2);border-radius:8px;height:10px;overflow:hidden">
       <div id="medit-progbar" style="height:10px;border-radius:8px;background:var(--accent);transition:width .4s;width:0%"></div>
@@ -588,10 +585,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#FEF08A,#FDE047);width:100%"></div>
   </div>
   <div id="solhoy" class="card" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="lbl" style="margin-bottom:0">Hoy</div>
-      <button onclick="borrarHoy('sol','renderSol')" class="delbtn">✕ Borrar</button>
-    </div>
+    <div class="lbl" style="margin-bottom:8px">Hoy</div>
     <div id="sollista"></div>
     <div id="soltotal" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.85rem;color:var(--text2)"></div>
   </div>
@@ -605,8 +599,12 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   </div>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div class="lbl" style="margin-bottom:0">Meta diaria (min)</div>
-      <div style="display:flex;gap:6px" id="sol-metas"></div>
+      <div class="lbl" style="margin-bottom:0">Meta diaria</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button onclick="chgMetaSol(-5)" class="ybtn" style="width:32px;height:32px;font-size:1rem;padding:0;min-height:32px;min-width:32px">−</button>
+        <span id="sol-meta-val" style="font-size:0.95rem;font-weight:700;color:#F59E0B;min-width:44px;text-align:center">20 min</span>
+        <button onclick="chgMetaSol(5)" class="ybtn" style="width:32px;height:32px;font-size:1rem;padding:0;min-height:32px;min-width:32px">+</button>
+      </div>
     </div>
     <div style="background:var(--surface2);border-radius:8px;height:12px;overflow:hidden">
       <div id="sol-progbar" style="height:12px;border-radius:8px;background:linear-gradient(90deg,#FDE047,#F59E0B);transition:width .4s;width:0%"></div>
@@ -618,6 +616,64 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <canvas id="csol" height="100"></canvas>
   </div>
   <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="solhist"></div></div>
+</div>
+
+<div id="pg-tension" class="page">
+  <div style="margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span style="font-size:2.4rem;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))">🪀</span>
+      <span style="font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;line-height:1.1">Tensión Arterial</span>
+    </div>
+    <div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#FECACA,#FCA5A5);width:100%"></div>
+  </div>
+
+  <!-- Registro de hoy -->
+  <div id="tenshoy" class="card" style="display:none">
+    <div class="lbl" style="margin-bottom:8px">Registros de hoy</div>
+    <div id="tenslista"></div>
+  </div>
+
+  <!-- Formulario -->
+  <div class="card">
+    <div class="lbl" style="margin-bottom:14px">📝 Nuevo registro</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:4px">
+      <div><div class="lbl" style="margin-bottom:6px">Sistólica</div><input type="number" id="tens-sis" placeholder="120" min="60" max="250"/></div>
+      <div><div class="lbl" style="margin-bottom:6px">Diastólica</div><input type="number" id="tens-dia" placeholder="80" min="40" max="150"/></div>
+      <div><div class="lbl" style="margin-bottom:6px">Pulso</div><input type="number" id="tens-pul" placeholder="72" min="30" max="220"/></div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--text3);margin-bottom:12px;text-align:center">mmHg &nbsp;&nbsp; mmHg &nbsp;&nbsp; ppm</div>
+    <button class="btn" onclick="saveTension()">Guardar</button>
+    <div id="tens-ok" style="display:none;text-align:center;color:var(--green);font-size:0.85rem;margin-top:8px;font-weight:600">✓ Guardado</div>
+  </div>
+
+  <!-- Clasificación -->
+  <div class="card" id="tens-clasificacion" style="display:none">
+    <div class="lbl" style="margin-bottom:10px">Clasificación (ESC/ESH)</div>
+    <div id="tens-clasif-val" style="font-size:1.1rem;font-weight:700;text-align:center;padding:12px;border-radius:10px"></div>
+  </div>
+
+  <!-- Referencia -->
+  <div class="card">
+    <div class="lbl" style="margin-bottom:10px">Guía de valores</div>
+    <table style="width:100%;font-size:0.8rem">
+      <tr><td style="padding:6px 4px;font-weight:700;color:var(--green)">🟢 Óptima</td><td style="color:var(--text2);text-align:right">&lt;120 / &lt;80</td></tr>
+      <tr><td style="padding:6px 4px;font-weight:700;color:#65A30D">🟡 Normal</td><td style="color:var(--text2);text-align:right">120–129 / 80–84</td></tr>
+      <tr><td style="padding:6px 4px;font-weight:700;color:#F59E0B">🟠 Normal-alta</td><td style="color:var(--text2);text-align:right">130–139 / 85–89</td></tr>
+      <tr><td style="padding:6px 4px;font-weight:700;color:var(--red)">🔴 Hipertensión</td><td style="color:var(--text2);text-align:right">≥140 / ≥90</td></tr>
+    </table>
+  </div>
+
+  <!-- Gráfica 7 días -->
+  <div class="chartwrap">
+    <div class="lbl" style="padding:0 4px 6px">Tensión 7 días (mmHg)</div>
+    <canvas id="ctens" height="120"></canvas>
+  </div>
+
+  <!-- Historial -->
+  <div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial</div>
+    <div id="tenshist"></div>
+  </div>
 </div>
 
 <div id="pg-anual" class="page">
@@ -703,7 +759,32 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     </div>
     <div id="impmsg" style="font-size:0.85rem;text-align:center;margin-top:8px"></div>
   </div>
+  <div class="card">
+    <div class="lbl" style="margin-bottom:6px">✏️ Corregir registro anterior</div>
+    <div style="font-size:0.85rem;color:var(--text3);margin-bottom:12px">Añade o corrige datos de días anteriores</div>
+    <button class="btn" onclick="closeSettings();setTimeout(openEdit,200)">Abrir corrector</button>
+  </div>
+  <div style="padding:16px 0 8px">
+    <button onclick="closeSettings()" style="width:100%;background:var(--accent);color:#fff;border:none;border-radius:14px;padding:18px;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:inherit">✕ Cerrar ajustes</button>
+  </div>
 </div>
+<div id="edit-panel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end">
+  <div style="background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px 40px;max-width:480px;margin:0 auto;max-height:85vh;overflow-y:auto;width:100%">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-size:1.2rem;font-weight:800;color:var(--text)">✏️ Editar registro</div>
+      <button onclick="closeEdit()" style="background:var(--surface2);border:1.5px solid var(--border2);border-radius:10px;padding:8px 16px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text)">✕</button>
+    </div>
+    <div style="margin-bottom:14px">
+      <div class="lbl" style="margin-bottom:6px">Fecha</div>
+      <input type="date" id="edit-fecha" style="font-size:1rem"/>
+    </div>
+    <div id="edit-modulo-select" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+    <div id="edit-fields"></div>
+    <button class="btn" onclick="saveEdit()" style="margin-top:8px">Guardar cambios</button>
+    <div id="edit-ok" style="display:none;text-align:center;color:var(--green);font-size:0.85rem;margin-top:8px;font-weight:600">✓ Guardado</div>
+  </div>
+</div>
+
 <div id="nav-wrapper" style="position:fixed;bottom:0;left:0;right:0;z-index:100;max-width:480px;margin:0 auto;transition:transform .3s cubic-bezier(.4,0,.2,1)">
   <!-- Toggle button — always visible -->
   <div style="display:flex;justify-content:center">
@@ -721,7 +802,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 <script>
 // ── STORAGE ──────────────────────────────────────
 var DKEY = 'salud360s_v1', PKEY = 'salud360p_v3';
-var INIT = {peso:{},ejercicio:{},sueno:{},agua:{},animo:{},ayuno:{},nutricion:{},medicamentos:{},meditacion:{},sol:{}};
+var INIT = {peso:{},ejercicio:{},sueno:{},agua:{},animo:{},ayuno:{},nutricion:{},medicamentos:{},meditacion:{},sol:{},tension:{}};
 var data, prefs;
 try { data = JSON.parse(localStorage.getItem(DKEY)) || clone(INIT); } catch(e){ data = clone(INIT); }
 try { prefs = JSON.parse(localStorage.getItem(PKEY)) || defPrefs(); } catch(e){ prefs = defPrefs(); }
@@ -771,6 +852,7 @@ var TABS=[
   {id:'ayuno',     l:'Ayuno',    i:'⏲️',  c:'linear-gradient(135deg,#BBF7D0,#86EFAC)', bg:'#DCFCE7'},
   {id:'peso',      l:'Peso',     i:'⚖️',  c:'linear-gradient(135deg,#BAE6FD,#7DD3FC)', bg:'#DBEAFE'},
   {id:'sol',       l:'Sol',      i:'☀️',   c:'linear-gradient(135deg,#FEF08A,#FDE047)', bg:'#FEF9C3'},
+  {id:'tension',   l:'Tensión',  i:'🪀',  c:'linear-gradient(135deg,#FECACA,#FCA5A5)', bg:'#FEF2F2'},
   {id:'anual',     l:'Anual',    i:'📅',  c:'linear-gradient(135deg,#FBCFE8,#F9A8D4)', bg:'#FCE7F3'}
 ];
 var curTab='dashboard';
@@ -789,6 +871,7 @@ function tabHasData(id){
     if(nd.tomados&&nd.tomados.length>0) return true;
     return false;
   }
+  if(id==='tension'){ var td=data.tension&&data.tension[t]; return !!(td&&Array.isArray(td.entradas)?td.entradas.length>0:false); }
   if(id==='sol'){ var sd=data.sol&&data.sol[t]; return !!(sd&&Array.isArray(sd.entradas)?sd.entradas.length>0:sd&&sd.mins); }
   if(id==='meditacion'){ var mr=data.meditacion&&data.meditacion[t]; if(!mr) return false; if(Array.isArray(mr.entradas)) return mr.entradas.length>0; return mr.estado==='hecho'; }
   return false;
@@ -875,6 +958,7 @@ var ALL_TAB_META=[
   {id:'nutricion',l:'Nutrición',i:'🍎'},
   {id:'meditacion',l:'Meditar',i:'🧘'},
   {id:'sol',l:'Sol',i:'☀️'},
+  {id:'tension',l:'Tensión',i:'🪀'},
   {id:'anual',l:'Registros',i:'📅'}
 ];
 function renderTabToggles(){
@@ -991,6 +1075,7 @@ function renderPage(id){
   else if(id==='nutricion') renderNut();
   else if(id==='meditacion') renderMedit();
   else if(id==='sol')       renderSol();
+  else if(id==='tension')   renderTension();
   else if(id==='anual')     renderAnual();
 }
 
@@ -1100,7 +1185,7 @@ function renderDash(){
   var hr=prefs.hr;
   setText('ca-agua-lbl','💧 Agua ('+agLbl()+')');
   // show/hide evolution charts based on hidden tabs
-  var cm=[['peso','evo-peso'],['sueno','evo-sueno'],['agua','evo-agua'],['animo','evo-animo'],['ejercicio','evo-ejercicio'],['meditacion','evo-meditacion'],['ayuno','evo-ayuno'],['sol','evo-sol']];
+  var cm=[['peso','evo-peso'],['sueno','evo-sueno'],['agua','evo-agua'],['animo','evo-animo'],['ejercicio','evo-ejercicio'],['meditacion','evo-meditacion'],['ayuno','evo-ayuno'],['sol','evo-sol'],['tension','evo-tension']];
   for(var ci=0;ci<cm.length;ci++){
     var cEl=el(cm[ci][1]);
     if(cEl) cEl.style.display=vis(cm[ci][0])?'':'none';
@@ -1115,6 +1200,13 @@ function renderDash(){
     return {l:fmt(d),v:dd.duracion||null};
   }), '#9C27B0');
   if(vis('meditacion')) drawBar('ca-meditacion',getDays(hr).map(function(d){ var m=data.meditacion&&data.meditacion[d]; if(!m) return {l:fmt(d),v:null}; if(Array.isArray(m.entradas)){ var tot=0; for(var k=0;k<m.entradas.length;k++) tot+=m.entradas[k].mins||0; return {l:fmt(d),v:tot||null}; } return {l:fmt(d),v:(m.estado==='hecho'?m.mins:null)}; }), '#00897B');
+  if(vis('tension')) (function(){
+    var days=getDays(hr);
+    drawTensionChart('ca-tension', days.map(function(d){
+      var r=data.tension&&data.tension[d]; if(!r||!Array.isArray(r.entradas)||!r.entradas.length) return {l:fmt(d),sis:null,dia:null};
+      var e=r.entradas[r.entradas.length-1]; return {l:fmt(d),sis:e.sis,dia:e.dia};
+    }));
+  })();
   if(vis('sol')) drawBar('ca-sol', getDays(hr).map(function(d){
     var r=data.sol&&data.sol[d]; if(!r) return {l:fmt(d),v:0};
     if(Array.isArray(r.entradas)){ var tot=0; for(var k=0;k<r.entradas.length;k++) tot+=r.entradas[k].mins||0; return {l:fmt(d),v:tot}; }
@@ -1306,6 +1398,27 @@ function renderEj(){
     }
     return {l:fmt(day),v:p2d(dd.pasos||0)};
   }), '#5C4FF6');
+  // Historial 7 días
+  var ejDays=getDays(7), ejH='', ejFound=false;
+  for(var di=ejDays.length-1;di>=0;di--){
+    var ejD=ejDays[di], ejR=data.ejercicio[ejD];
+    if(!ejR) continue;
+    var ents=Array.isArray(ejR.entradas)?ejR.entradas:(ejR.tipo?[ejR]:[]);
+    if(!ents.length) continue;
+    ejFound=true;
+    ejH+='<div class="hrow">';
+    ejH+='<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="hdate">'+fmt(ejD)+'</span></div>';
+    for(var ei=0;ei<ents.length;ei++){
+      var en=ents[ei];
+      ejH+='<div style="font-size:0.85rem;color:var(--text2);padding:2px 0">'+
+        (en.tipo||'Actividad')+
+        (en.duracion?' — '+en.duracion+' min':'')+
+        (en.pasos?' — 🚶 '+p2d(en.pasos).toLocaleString()+' '+caLbl():'')+
+      '</div>';
+    }
+    ejH+='</div>';
+  }
+  if(el('ejhist')) set('ejhist', ejFound?ejH:'<span style="color:var(--text3);font-size:0.85rem">Sin registros aún</span>');
 }
 
 
@@ -1335,6 +1448,7 @@ function borrarHoy(modulo, renderFn){
   else if(modulo==='ayuno'){ delete data.ayuno[t]; }
   else if(modulo==='sol'){ delete data.sol[t]; }
   else if(modulo==='meditacion'){ delete data.meditacion[t]; }
+  else if(modulo==='tension'){ delete data.tension[t]; }
   else if(data[modulo]) delete data[modulo][t];
   saveD();
   if(renderFn && typeof window[renderFn]==='function') window[renderFn]();
@@ -1799,6 +1913,7 @@ function setMeditEstado(estado){
 function renderMedit(){
   if(!data.meditacion) data.meditacion={};
   if(!data.sol) data.sol={};
+  if(!data.tension) data.tension={};
   var d=meditGetHoy(), entradas=d.entradas;
   if(!prefs.meditMeta) prefs.meditMeta=10;
   var totalMins=0;
@@ -1822,17 +1937,8 @@ function renderMedit(){
     el('medit-timer-card').style.display='block';
   }
 
-  // meta pills
-  var metas=[5,10,15,20,30], mh='';
-  for(var mi=0;mi<metas.length;mi++){
-    var mv=metas[mi], active=prefs.meditMeta===mv;
-    mh+='<button onclick="setMetaMedit('+mv+')" style="'+
-      'padding:5px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:inherit;'+
-      'background:'+(active?'var(--accent)':'var(--surface2)')+';'+
-      'border:1.5px solid '+(active?'var(--accent)':'var(--border)')+';'+
-      'color:'+(active?'#fff':'var(--text3)')+'">'+mv+'m</button>';
-  }
-  set('medit-metas', mh);
+  // meta display
+  var mmv=el('medit-meta-val'); if(mmv) mmv.textContent=(prefs.meditMeta||10)+' min';
 
   // barra progreso
   var pct=prefs.meditMeta>0?Math.min(100,Math.round(totalMins/prefs.meditMeta*100)):0;
@@ -1868,7 +1974,8 @@ function renderMedit(){
   set('medit-hist', found?hist:'<span style="color:var(--text3);font-size:0.8rem">Sin registros aún</span>');
 }
 
-function setMetaMedit(m){ prefs.meditMeta=m; saveP(); renderMedit(); }
+function setMetaMedit(m){ prefs.meditMeta=Math.max(5,Math.min(120,m)); saveP(); renderMedit(); }
+function chgMetaMedit(d){ setMetaMedit((prefs.meditMeta||10)+d); }
 
 // ── SOL ───────────────────────────────────────────
 function solGetHoy(){
@@ -1891,7 +1998,8 @@ function delSolEntrada(idx){
   d.entradas.splice(idx,1);
   saveD(); renderSol();
 }
-function setMetaSol(m){ prefs.solMeta=m; saveP(); renderSol(); }
+function setMetaSol(m){ prefs.solMeta=Math.max(5,Math.min(120,m)); saveP(); renderSol(); }
+function chgMetaSol(d){ setMetaSol((prefs.solMeta||20)+d); }
 function renderSol(){
   if(!data.sol) data.sol={};
   var d=solGetHoy(), entradas=d.entradas;
@@ -1914,17 +2022,8 @@ function renderSol(){
     el('solhoy').style.display='none';
   }
 
-  // meta pills
-  var metas=[10,15,20,30], mh='';
-  for(var mi=0;mi<metas.length;mi++){
-    var mv=metas[mi], active=prefs.solMeta===mv;
-    mh+='<button onclick="setMetaSol('+mv+')" style="'+
-      'padding:5px 10px;border-radius:6px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;'+
-      'background:'+(active?'#F59E0B':'var(--surface2)')+';'+
-      'border:1.5px solid '+(active?'#F59E0B':'var(--border)')+';'+
-      'color:'+(active?'#fff':'var(--text3)')+'">'+mv+'m</button>';
-  }
-  set('sol-metas', mh);
+  // meta display
+  var smv=el('sol-meta-val'); if(smv) smv.textContent=(prefs.solMeta||20)+' min';
 
   var pct=prefs.solMeta>0?Math.min(100,Math.round(total/prefs.solMeta*100)):0;
   el('sol-progbar').style.width=pct+'%';
@@ -1955,6 +2054,319 @@ function renderSol(){
   set('solhist', found?hist:'<span style="color:var(--text3);font-size:0.85rem">Sin registros a\u00fan</span>');
 }
 
+// ── TENSIÓN ARTERIAL ─────────────────────────────
+function clasifTension(sis, dia){
+  if(sis < 120 && dia < 80)  return {txt:'🟢 Óptima',         col:'#16A34A', bg:'#DCFCE7'};
+  if(sis < 130 && dia < 85)  return {txt:'🟡 Normal',          col:'#65A30D', bg:'#F7FEE7'};
+  if(sis < 140 && dia < 90)  return {txt:'🟠 Normal-alta',     col:'#F59E0B', bg:'#FEF9C3'};
+  return                            {txt:'🔴 Hipertensión',    col:'#EF4444', bg:'#FEE2E2'};
+}
+function saveTension(){
+  var sis=parseInt(el('tens-sis').value)||0;
+  var dia=parseInt(el('tens-dia').value)||0;
+  var pul=parseInt(el('tens-pul').value)||0;
+  if(!sis||!dia){ alert('Introduce al menos sistólica y diastólica'); return; }
+  var t=today();
+  if(!data.tension[t]||!Array.isArray(data.tension[t].entradas)) data.tension[t]={entradas:[]};
+  var now=new Date();
+  var hora=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+  data.tension[t].entradas.push({sis:sis,dia:dia,pul:pul,hora:hora});
+  saveD();
+  el('tens-sis').value=''; el('tens-dia').value=''; el('tens-pul').value='';
+  var ok=el('tens-ok');
+  if(ok){ ok.style.display='block'; setTimeout(function(){ ok.style.display='none'; },2000); }
+  renderTension();
+}
+function delTensionEntrada(idx){
+  var t=today(), d=data.tension[t];
+  if(d&&Array.isArray(d.entradas)){ d.entradas.splice(idx,1); saveD(); renderTension(); }
+}
+function renderTension(){
+  if(!data.tension) data.tension={};
+  var t=today(), d=data.tension[t];
+  var entradas=d&&Array.isArray(d.entradas)?d.entradas:[];
+
+  // Lista hoy
+  if(entradas.length){
+    el('tenshoy').style.display='block';
+    var lh='';
+    for(var i=0;i<entradas.length;i++){
+      var en=entradas[i];
+      var cl=clasifTension(en.sis,en.dia);
+      lh+='<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">'+
+        '<div>'+
+          '<span style="font-size:1.1rem;font-weight:800;color:var(--text)">'+en.sis+'/'+en.dia+'</span>'+
+          '<span style="font-size:0.8rem;color:var(--text3);margin-left:6px">mmHg</span>'+
+          (en.pul?'<span style="font-size:0.8rem;color:var(--text2);margin-left:10px">♥ '+en.pul+' ppm</span>':'')+
+          '<span style="font-size:0.75rem;color:var(--text3);margin-left:8px">'+en.hora+'</span>'+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:8px">'+
+          '<span style="font-size:0.75rem;font-weight:700;padding:3px 8px;border-radius:20px;background:'+cl.bg+';color:'+cl.col+'">'+cl.txt+'</span>'+
+          '<button onclick="delTensionEntrada('+i+')" style="background:none;border:none;color:var(--text3);font-size:1.1rem;cursor:pointer;padding:4px 8px">\u2715</button>'+
+        '</div>'+
+      '</div>';
+    }
+    set('tenslista', lh);
+    // Clasificación del último registro
+    var ult=entradas[entradas.length-1];
+    var clUlt=clasifTension(ult.sis,ult.dia);
+    var cv=el('tens-clasificacion');
+    if(cv) cv.style.display='block';
+    set('tens-clasif-val','<span style="color:'+clUlt.col+'">'+clUlt.txt+'</span><br><span style="font-size:0.85rem;color:var(--text2);font-weight:500">Último: '+ult.sis+'/'+ult.dia+(ult.pul?' · '+ult.pul+' ppm':'')+'</span>');
+  } else {
+    el('tenshoy').style.display='none';
+    var cv=el('tens-clasificacion'); if(cv) cv.style.display='none';
+  }
+
+  // Gráfica — sistólica rojo, diastólica azul
+  var days=getDays(7);
+  drawTensionChart('ctens', days.map(function(d){
+    var r=data.tension[d]; if(!r||!Array.isArray(r.entradas)||!r.entradas.length) return {l:fmt(d),sis:null,dia:null};
+    var e=r.entradas[r.entradas.length-1];
+    return {l:fmt(d),sis:e.sis,dia:e.dia};
+  }));
+
+  // Historial
+  var hist='', found=false;
+  for(var di=days.length-1;di>=0;di--){
+    var day=days[di], r=data.tension[day];
+    if(!r||!Array.isArray(r.entradas)||!r.entradas.length) continue;
+    found=true;
+    hist+='<div class="hrow">';
+    hist+='<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span class="hdate">'+fmt(day)+'</span></div>';
+    for(var j=0;j<r.entradas.length;j++){
+      var en2=r.entradas[j], cl2=clasifTension(en2.sis,en2.dia);
+      hist+='<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0">'+
+        '<span style="font-size:0.9rem;font-weight:700">'+en2.sis+'/'+en2.dia+' mmHg'+(en2.pul?' · ♥ '+en2.pul+' ppm':'')+'</span>'+
+        '<span style="font-size:0.7rem;font-weight:700;padding:2px 7px;border-radius:20px;background:'+cl2.bg+';color:'+cl2.col+'">'+cl2.txt+'</span>'+
+      '</div>';
+    }
+    hist+='</div>';
+  }
+  set('tenshist', found?hist:'<span style="color:var(--text3);font-size:0.85rem">Sin registros aún</span>');
+}
+function drawTensionChart(id, pts){
+  var canvas=el(id); if(!canvas) return;
+  var W=getW(id), H=parseInt(canvas.getAttribute('height'));
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext('2d');
+  var pl=4,pr=4,pt=12,pb=22,cW=W-pl-pr,cH=H-pt-pb;
+  ctx.clearRect(0,0,W,H);
+  // Reference bands
+  ctx.fillStyle='rgba(239,68,68,0.06)'; ctx.fillRect(pl,pt,cW,cH*0.3);   // danger zone top
+  ctx.fillStyle='rgba(34,197,94,0.08)';  ctx.fillRect(pl,pt+cH*0.3,cW,cH*0.4); // normal zone
+  // Grid line
+  ctx.strokeStyle='#E2E4EE'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pl,H-pb); ctx.lineTo(W-pr,H-pb); ctx.stroke();
+  // Find min/max across both series
+  var vals=[];
+  for(var i=0;i<pts.length;i++){
+    if(pts[i].sis) vals.push(pts[i].sis);
+    if(pts[i].dia) vals.push(pts[i].dia);
+  }
+  if(!vals.length){ ctx.fillStyle='#8B90A8'; ctx.font='12px DM Sans,sans-serif'; ctx.textAlign='center'; ctx.fillText('Sin datos aún',W/2,H/2); return; }
+  var mn=Math.min.apply(null,vals)-10, mx=Math.max.apply(null,vals)+10;
+  if(mn<40) mn=40;
+  var gap=pts.length>1?cW/(pts.length-1):cW;
+  function yPos(v){ return pt+cH*(1-(v-mn)/(mx-mn)); }
+  function drawSeries(key, color){
+    ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.beginPath();
+    var started=false;
+    for(var i=0;i<pts.length;i++){
+      var x=pl+i*gap, v=pts[i][key];
+      if(v===null) continue;
+      var y=yPos(v);
+      if(!started){ ctx.moveTo(x,y); started=true; } else { ctx.lineTo(x,y); }
+    }
+    ctx.stroke();
+    // Dots
+    for(var i=0;i<pts.length;i++){
+      var x=pl+i*gap, v=pts[i][key];
+      if(v===null) continue;
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,yPos(v),4,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=color; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(x,yPos(v),4,0,Math.PI*2); ctx.stroke();
+    }
+  }
+  drawSeries('sis','#EF4444');
+  drawSeries('dia','#3B82F6');
+  // Labels
+  var step=pts.length<=7?1:pts.length<=14?2:Math.ceil(pts.length/7);
+  ctx.fillStyle='#8B90A8'; ctx.font='bold 10px DM Sans,sans-serif'; ctx.textAlign='center';
+  for(var i=0;i<pts.length;i+=step){ ctx.fillText(pts[i].l,pl+i*gap,H-4); }
+  // Legend
+  ctx.font='bold 9px DM Sans,sans-serif';
+  ctx.fillStyle='#EF4444'; ctx.fillText('SIS',pl+8,pt-2);
+  ctx.fillStyle='#3B82F6'; ctx.fillText('DIA',pl+28,pt-2);
+}
+
+// ── EDITAR REGISTROS ANTERIORES ──────────────────
+var editMod = 'peso';
+
+function openEdit(){
+  el('edit-panel').style.display='flex';
+  var d=new Date(); d.setDate(d.getDate()-1);
+  el('edit-fecha').value=d.toISOString().slice(0,10);
+  el('edit-fecha').onchange=renderEditFields;
+  renderEditModulos();
+  renderEditFields();
+}
+function closeEdit(){
+  el('edit-panel').style.display='none';
+}
+function setEditMod(m){ editMod=m; renderEditModulos(); renderEditFields(); }
+
+function renderEditModulos(){
+  var hidden=prefs.hiddenTabs||[];
+  var mods=[
+    {id:'peso',l:'⚖️ Peso'},
+    {id:'sueno',l:'🌙 Sueño'},
+    {id:'agua',l:'💧 Agua'},
+    {id:'animo',l:'😊 Ánimo'},
+    {id:'ejercicio',l:'🏃 Entreno'},
+    {id:'ayuno',l:'⏲️ Ayuno'},
+    {id:'meditacion',l:'🧘 Meditar'},
+    {id:'sol',l:'☀️ Sol'},
+    {id:'tension',l:'🪀 Tensión'}
+  ];
+  var h='';
+  mods.forEach(function(m){
+    if(hidden.indexOf(m.id)>=0) return;
+    var active=editMod===m.id;
+    h+='<button onclick="setEditMod(\''+m.id+'\')" style="padding:8px 12px;border-radius:20px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:4px;'+
+      'background:'+(active?'var(--accent)':'var(--surface2)')+';'+
+      'border:1.5px solid '+(active?'var(--accent)':'var(--border)')+';'+
+      'color:'+(active?'#fff':'var(--text2)')+'">'+m.l+'</button>';
+  });
+  set('edit-modulo-select',h);
+}
+
+function renderEditFields(){
+  var fecha=el('edit-fecha').value||today();
+  var h='';
+  if(editMod==='peso'){
+    var v=data.peso[fecha]||{};
+    h='<div class="lbl" style="margin-bottom:6px">Peso (kg)</div>'+
+      '<input type="number" step="0.1" id="ef-peso" value="'+(v.peso||'')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Altura (cm)</div>'+
+      '<input type="number" id="ef-altura" value="'+(prefs.altura||170)+'" placeholder="170"/>';
+  } else if(editMod==='sueno'){
+    var v=data.sueno[fecha]||{};
+    h='<div class="lbl" style="margin-bottom:6px">Horas dormidas</div>'+
+      '<input type="number" step="0.5" id="ef-horas" value="'+(v.horas||'')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Calidad (1-5)</div>'+
+      '<input type="number" min="1" max="5" id="ef-calidad" value="'+(v.calidad||3)+'"/>';
+  } else if(editMod==='agua'){
+    var v=data.agua[fecha]||{vasos:0};
+    h='<div class="lbl" style="margin-bottom:6px">Vasos</div>'+
+      '<input type="number" id="ef-vasos" value="'+(v.vasos||0)+'"/>';
+  } else if(editMod==='animo'){
+    var v=data.animo[fecha]||{};
+    h='<div class="lbl" style="margin-bottom:6px">Estado (1=Bajo → 5=Excelente)</div>'+
+      '<input type="number" min="1" max="5" id="ef-animo" value="'+(v.val||3)+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Nota (opcional)</div>'+
+      '<textarea rows="2" id="ef-nota">'+(v.nota||'')+'</textarea>';
+  } else if(editMod==='ejercicio'){
+    var dd=data.ejercicio[fecha];
+    var ents=dd&&Array.isArray(dd.entradas)?dd.entradas:[];
+    var totalMin=0, totalPasos=0;
+    for(var k=0;k<ents.length;k++){ totalMin+=ents[k].duracion||0; totalPasos+=ents[k].pasos||0; }
+    h='<div class="lbl" style="margin-bottom:6px">Duración total (min)</div>'+
+      '<input type="number" id="ef-ejmin" value="'+(totalMin||'')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Pasos / metros</div>'+
+      '<input type="number" id="ef-ejpasos" value="'+(totalPasos||'')+'" placeholder="0"/>';
+  } else if(editMod==='ayuno'){
+    var ay=data.ayuno[fecha];
+    var ents=ay&&Array.isArray(ay.entradas)?ay.entradas:(ay&&ay.inicio?[ay]:[]);
+    var firstEnt=ents.length?ents[0]:{};
+    h='<div class="lbl" style="margin-bottom:6px">Inicio (HH:MM)</div>'+
+      '<input type="time" id="ef-ayini" value="'+(firstEnt.inicio||'20:00')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Fin (HH:MM)</div>'+
+      '<input type="time" id="ef-ayfin" value="'+(firstEnt.fin||'12:00')+'"/>';
+  } else if(editMod==='meditacion'){
+    var mr=data.meditacion&&data.meditacion[fecha];
+    var total=0;
+    if(mr&&Array.isArray(mr.entradas)) for(var k=0;k<mr.entradas.length;k++) total+=mr.entradas[k].mins||0;
+    else if(mr&&mr.mins) total=mr.mins;
+    h='<div class="lbl" style="margin-bottom:6px">Minutos totales</div>'+
+      '<input type="number" id="ef-medit" value="'+(total||'')+'"/>';
+  } else if(editMod==='sol'){
+    var sr=data.sol&&data.sol[fecha];
+    var total=0;
+    if(sr&&Array.isArray(sr.entradas)) for(var k=0;k<sr.entradas.length;k++) total+=sr.entradas[k].mins||0;
+    h='<div class="lbl" style="margin-bottom:6px">Minutos al sol</div>'+
+      '<input type="number" id="ef-sol" value="'+(total||'')+'"/>';
+  } else if(editMod==='tension'){
+    var tr=data.tension&&data.tension[fecha];
+    var ents=tr&&Array.isArray(tr.entradas)?tr.entradas:[];
+    var last=ents.length?ents[ents.length-1]:{};
+    h='<div class="lbl" style="margin-bottom:6px">Sistólica (mmHg)</div>'+
+      '<input type="number" id="ef-sis" value="'+(last.sis||'')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:10px">Diastólica (mmHg)</div>'+
+      '<input type="number" id="ef-dia" value="'+(last.dia||'')+'"/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:10px">Pulso (ppm)</div>'+
+      '<input type="number" id="ef-pul" value="'+(last.pul||'')+'"/>';
+  }
+  // Show existing data notice if data exists for that date
+  var hasData=!!( (data[editMod]&&data[editMod][fecha]) ||
+    (editMod==='meditacion'&&data.meditacion&&data.meditacion[fecha]) ||
+    (editMod==='sol'&&data.sol&&data.sol[fecha]) ||
+    (editMod==='tension'&&data.tension&&data.tension[fecha]) );
+  if(hasData) h='<div style="font-size:0.75rem;color:var(--accent);margin-bottom:10px;font-weight:600">ℹ️ Ya hay datos para este día — se sobrescribirán</div>'+h;
+  set('edit-fields',h);
+}
+
+function saveEdit(){
+  var fecha=el('edit-fecha').value||today();
+  if(editMod==='peso'){
+    var p=parseFloat(el('ef-peso').value)||0; if(!p){ alert('Introduce el peso'); return; }
+    var alt=parseInt(el('ef-altura').value)||prefs.altura||170;
+    var imc=(p/((alt/100)*(alt/100))).toFixed(1);
+    data.peso[fecha]={peso:p,imc:imc}; prefs.altura=alt; saveP();
+  } else if(editMod==='sueno'){
+    var h=parseFloat(el('ef-horas').value)||0; if(!h){ alert('Introduce las horas'); return; }
+    data.sueno[fecha]={horas:h,calidad:parseInt(el('ef-calidad').value)||3};
+  } else if(editMod==='agua'){
+    var v=parseInt(el('ef-vasos').value)||0;
+    data.agua[fecha]={vasos:v};
+  } else if(editMod==='animo'){
+    var a=Math.min(5,Math.max(1,parseInt(el('ef-animo').value)||3));
+    data.animo[fecha]={val:a,nota:el('ef-nota').value||''};
+  } else if(editMod==='ejercicio'){
+    var mins=parseInt(el('ef-ejmin').value)||0;
+    var pasos=parseInt(el('ef-ejpasos').value)||0;
+    if(!mins&&!pasos){ alert('Introduce al menos duración o pasos'); return; }
+    data.ejercicio[fecha]={entradas:[{tipo:'Manual',duracion:mins,pasos:pasos}]};
+  } else if(editMod==='ayuno'){
+    var ini=el('ef-ayini').value, fin=el('ef-ayfin').value;
+    if(!ini||!fin){ alert('Introduce inicio y fin'); return; }
+    data.ayuno[fecha]={entradas:[{inicio:ini,fin:fin}]};
+  } else if(editMod==='meditacion'){
+    var mins=parseInt(el('ef-medit').value)||0; if(!mins){ alert('Introduce los minutos'); return; }
+    data.meditacion[fecha]={entradas:[{mins:mins}]};
+  } else if(editMod==='sol'){
+    var mins=parseInt(el('ef-sol').value)||0; if(!mins){ alert('Introduce los minutos'); return; }
+    data.sol[fecha]={entradas:[{mins:mins}]};
+  } else if(editMod==='tension'){
+    var sis=parseInt(el('ef-sis').value)||0, dia=parseInt(el('ef-dia').value)||0;
+    if(!sis||!dia){ alert('Introduce sistólica y diastólica'); return; }
+    data.tension[fecha]={entradas:[{sis:sis,dia:dia,pul:parseInt(el('ef-pul').value)||0,hora:'manual'}]};
+  }
+  saveD();
+  // Refresh current page charts if affected
+  if(curTab==='dashboard') renderDash();
+  else renderPage(curTab);
+  // Show confirmation
+  var ok=el('edit-ok');
+  if(ok){
+    ok.style.display='block';
+    setTimeout(function(){
+      ok.style.display='none';
+      closeEdit();
+    },1200);
+  }
+}
+
+
 // ── REGISTROS (Semana / Mes / Año) ───────────────
 var MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 var MESES_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -1972,7 +2384,8 @@ var REG_METRICS=[
   {k:'meditacion',l:'Meditar',  ic:'🧘', col:'#00897B', unit:'min'},
   {k:'ayuno',    l:'Ayuno',     ic:'⏲️', col:'#E91E8C', unit:'h'},
   {k:'comida',   l:'Comida',    ic:'🥗', col:'#4CAF50', unit:''},
-  {k:'sol',      l:'Sol',       ic:'☀️', col:'#F59E0B', unit:'min'}
+  {k:'sol',      l:'Sol',       ic:'☀️', col:'#F59E0B', unit:'min'},
+  {k:'tension',  l:'Tensión',    ic:'🪀', col:'#EF4444', unit:'mmHg'}
 ];
 
 function regMetricObj(){ for(var i=0;i<REG_METRICS.length;i++) if(REG_METRICS[i].k===regMetric) return REG_METRICS[i]; return REG_METRICS[0]; }
@@ -2000,6 +2413,7 @@ function getVal(dstr, mk){
     var tot=0; for(var k=0;k<ents.length;k++) tot+=calcDuracionH(ents[k].inicio,ents[k].fin);
     return tot>0?tot:null;
   }
+  if(mk==='tension'){ var tr=data.tension&&data.tension[dstr]; if(!tr||!Array.isArray(tr.entradas)||!tr.entradas.length) return null; return tr.entradas[tr.entradas.length-1].sis||null; }
   if(mk==='comida'){
     var n=data.nutricion[dstr]; if(!n||n.comidaSana==null) return null;
     return n.comidaSana?1:0;
@@ -2030,6 +2444,7 @@ function getDayFull(dstr){
     meditar:(data.meditacion&&data.meditacion[dstr]&&data.meditacion[dstr].estado==='hecho')?data.meditacion[dstr].mins:null,
     ayuno:  (function(){ var ay=data.ayuno[dstr]; if(!ay) return null; var ents=Array.isArray(ay.entradas)?ay.entradas:(ay.inicio?[ay]:[]); if(!ents.length) return null; var tot=0; for(var k=0;k<ents.length;k++) tot+=calcDuracionH(ents[k].inicio,ents[k].fin); return tot>0?tot:null; })(),
     comida: data.nutricion[dstr]?data.nutricion[dstr].comidaSana:null,
+    tension: (function(){ var tr=data.tension&&data.tension[dstr]; if(!tr||!Array.isArray(tr.entradas)||!tr.entradas.length) return null; var e=tr.entradas[tr.entradas.length-1]; return e.sis+'/'+e.dia; })(),
     sol: (function(){ var sr=data.sol&&data.sol[dstr]; if(!sr) return null; if(Array.isArray(sr.entradas)){ var tot=0; for(var k=0;k<sr.entradas.length;k++) tot+=sr.entradas[k].mins||0; return tot||null; } return sr.mins||null; })()
   };
 }
