@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -267,13 +267,10 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <button class="btn" onclick="savePeso()">Registrar</button>
   </div>
   <div id="pesohoy" style="display:none" class="card">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div class="grid2" style="flex:1">
+    <div class="grid2">
         <div><div class="lbl">Peso hoy</div><div id="pesoval" class="val"></div></div>
         <div><div class="lbl">IMC</div><div id="imcval" class="val"></div><div id="imccat" class="sub"></div></div>
       </div>
-      <button onclick="borrarHoy('peso','renderPeso')" class="delbtn">✕</button>
-    </div>
   </div>
   <div class="chartwrap"><div class="lbl" style="padding:0 4px 6px">Peso 7 días</div><canvas id="cp" height="110"></canvas></div>
   <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="pesohist"></div></div>
@@ -286,6 +283,13 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
       <span style="font-size:1.7rem;font-weight:800;color:var(--text);letter-spacing:-0.02em;line-height:1.1">Entreno</span>
     </div>
     <div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#99F6E4,#5EEAD4);width:100%"></div>
+  </div>
+
+  <!-- Registros del día — arriba -->
+  <div id="ejhoy" class="card" style="display:none">
+    <div class="lbl" style="margin-bottom:8px">Hoy</div>
+    <div id="ejlista"></div>
+    <div id="ejresumen" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text2)"></div>
   </div>
 
   <!-- Card 1: Actividades + duración + guardar + añadir nueva -->
@@ -322,13 +326,6 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     </div>
   </div>
 
-  <!-- Registros del día — debajo -->
-  <div id="ejhoy" class="card" style="display:none">
-    <div class="lbl" style="margin-bottom:8px">Registros de hoy</div>
-    <div id="ejlista"></div>
-    <div id="ejresumen" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text2)"></div>
-  </div>
-
   <div class="chartwrap"><div class="lbl" id="pclbl" style="padding:0 4px 6px">Pasos 7 días</div><canvas id="cpa" height="100"></canvas></div>
   <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="ejhist"></div></div>
 </div>
@@ -342,10 +339,8 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div style="height:4px;border-radius:2px;background:linear-gradient(90deg,#A5B4FC,#818CF8);width:100%"></div>
   </div>
   <div id="suenhoy" style="display:none" class="card">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div><div class="lbl">Hoy</div><div id="suenhoy-val" style="font-size:1.2rem;font-weight:700;color:var(--accent);margin-top:4px"></div></div>
-      <button onclick="borrarHoy('sueno','renderSueno')" class="delbtn">✕</button>
-    </div>
+    <div class="lbl" style="margin-bottom:4px">Hoy</div>
+    <div id="suenhoy-val" style="font-size:1.2rem;font-weight:700;color:var(--accent);margin-top:4px"></div>
   </div>
   <div class="card">
     <div class="lbl">Horas dormidas</div>
@@ -405,7 +400,7 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="lbl" style="margin-bottom:0">¿Cómo te sientes hoy?</div>
-      <button id="animodelbtn" onclick="borrarHoy('animo','renderAnimo')" class="delbtn" style="display:none">✕</button>
+
     </div>
     <div style="display:flex;justify-content:space-around;margin-bottom:14px" id="moodrow"></div>
     <div style="text-align:center;color:#5C4FF6;font-size:0.8rem;margin-bottom:12px" id="moodlbl">Neutro</div>
@@ -1448,6 +1443,7 @@ function borrarHoy(modulo, renderFn){
   else if(modulo==='ayuno'){ delete data.ayuno[t]; }
   else if(modulo==='sol'){ delete data.sol[t]; }
   else if(modulo==='meditacion'){ delete data.meditacion[t]; }
+  else if(modulo==='animo'){ delete data.animo[t]; }
   else if(modulo==='tension'){ delete data.tension[t]; }
   else if(data[modulo]) delete data[modulo][t];
   saveD();
@@ -1520,7 +1516,6 @@ function setAnimo(v){
 function saveAnimo(){
   var nota=el('animonota').value||'';
   data.animo[today()]={val:animV,nota:nota}; saveD();
-  var db=el('animodelbtn'); if(db) db.style.display='inline-block';
   // Update historial inline without re-rendering whole page
   var days=getDays(14), h='', found=false, i;
   for(i=0;i<days.length;i++){
@@ -1535,7 +1530,6 @@ function saveAnimo(){
 }
 function renderAnimo(){
   var t=today(), an=data.animo[t];
-  var db=el('animodelbtn'); if(db) db.style.display=an?'inline-block':'none';
   if(an){ animV=an.val; el('animonota').value=an.nota||''; }
   var mh='', i;
   for(i=0;i<MOODS.length;i++){
@@ -2226,7 +2220,8 @@ function renderEditModulos(){
     {id:'ayuno',l:'⏲️ Ayuno'},
     {id:'meditacion',l:'🧘 Meditar'},
     {id:'sol',l:'☀️ Sol'},
-    {id:'tension',l:'🪀 Tensión'}
+    {id:'tension',l:'🪀 Tensión'},
+    {id:'nutricion',l:'🍎 Nutrición'}
   ];
   var h='';
   mods.forEach(function(m){
@@ -2268,12 +2263,14 @@ function renderEditFields(){
   } else if(editMod==='ejercicio'){
     var dd=data.ejercicio[fecha];
     var ents=dd&&Array.isArray(dd.entradas)?dd.entradas:[];
-    var totalMin=0, totalPasos=0;
-    for(var k=0;k<ents.length;k++){ totalMin+=ents[k].duracion||0; totalPasos+=ents[k].pasos||0; }
-    h='<div class="lbl" style="margin-bottom:6px">Duración total (min)</div>'+
+    var totalMin=0, totalPasos=0, lastTipo='';
+    for(var k=0;k<ents.length;k++){ totalMin+=ents[k].duracion||0; totalPasos+=ents[k].pasos||0; if(ents[k].tipo&&ents[k].tipo!=='Manual') lastTipo=ents[k].tipo; }
+    h='<div class="lbl" style="margin-bottom:6px">Actividad</div>'+
+      '<input type="text" id="ef-ejtipo" value="'+lastTipo+'" placeholder="ej. Yoga, Natación..."/>'+
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Duración (min)</div>'+
       '<input type="number" id="ef-ejmin" value="'+(totalMin||'')+'"/>'+
-      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">Pasos / metros</div>'+
-      '<input type="number" id="ef-ejpasos" value="'+(totalPasos||'')+'" placeholder="0"/>';
+      '<div class="lbl" style="margin-bottom:6px;margin-top:12px">'+caLbl().charAt(0).toUpperCase()+caLbl().slice(1)+'</div>'+
+      '<input type="number" id="ef-ejpasos" value="'+(totalPasos?p2d(totalPasos):'')+'" placeholder="0"/>';
   } else if(editMod==='ayuno'){
     var ay=data.ayuno[fecha];
     var ents=ay&&Array.isArray(ay.entradas)?ay.entradas:(ay&&ay.inicio?[ay]:[]);
@@ -2295,6 +2292,43 @@ function renderEditFields(){
     if(sr&&Array.isArray(sr.entradas)) for(var k=0;k<sr.entradas.length;k++) total+=sr.entradas[k].mins||0;
     h='<div class="lbl" style="margin-bottom:6px">Minutos al sol</div>'+
       '<input type="number" id="ef-sol" value="'+(total||'')+'"/>';
+    } else if(editMod==='nutricion'){
+    var nd=data.nutricion[fecha]||{};
+    editNutComidaVal=nd.comidaSana!==undefined?nd.comidaSana:null;
+    var cs=nd.comidaSana;
+    var allTom=nd.tomados||[];
+    var sups=prefs.supLista||[];
+    var meds=prefs.medLista||[];
+    // Build suplementos checkboxes
+    var supH='';
+    for(var k=0;k<sups.length;k++){
+      var taken=allTom.indexOf(sups[k])>=0;
+      supH+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">'+
+        '<span style="font-size:0.9rem;color:var(--text)">'+sups[k]+'</span>'+
+        '<button onclick="togEditSup(\''+sups[k].replace(/'/g,"\\'")+'\')" style="width:36px;height:36px;border-radius:50%;border:2px solid '+(taken?'var(--green)':'var(--border2)')+';background:'+(taken?'var(--green2)':'var(--surface2)')+';color:'+(taken?'var(--green)':'var(--text3)')+';font-size:1rem;cursor:pointer">'+(taken?'✓':'○')+'</button>'+
+      '</div>';
+    }
+    // Build medicacion checkboxes (3 tomas)
+    var medH='';
+    for(var k=0;k<meds.length;k++){
+      var mQ=meds[k].replace(/'/g,"\\'");
+      medH+='<div style="padding:8px 0;border-bottom:1px solid var(--border)">'+
+        '<div style="font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:6px">💊 '+meds[k]+'</div>'+
+        '<div style="display:flex;gap:8px">';
+      for(var n=1;n<=3;n++){
+        var key=meds[k]+'|'+n, tk=allTom.indexOf(key)>=0;
+        medH+='<button onclick="togEditMed(\''+mQ+'\','+n+')" style="flex:1;padding:6px;border-radius:8px;border:2px solid '+(tk?'var(--blue)':'var(--border2)')+';background:'+(tk?'rgba(26,127,224,0.15)':'var(--surface2)')+';color:'+(tk?'var(--blue)':'var(--text3)')+';font-size:0.8rem;font-weight:700;cursor:pointer">'+n+'º</button>';
+      }
+      medH+='</div></div>';
+    }
+    h='<div class="lbl" style="margin-bottom:6px">¿Comiste sano?</div>'+
+      '<div style="display:flex;gap:8px;margin-bottom:16px">'+
+        '<button onclick="editNutComida(true)" id="en-si" style="flex:1;padding:12px;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid '+(cs===true?'var(--green)':'var(--border)')+';background:'+(cs===true?'var(--green2)':'var(--surface2)')+';color:'+(cs===true?'var(--green)':'var(--text2)')+'">Sí</button>'+
+        '<button onclick="editNutComida(false)" id="en-no" style="flex:1;padding:12px;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid '+(cs===false?'var(--red)':'var(--border)')+';background:'+(cs===false?'var(--red2)':'var(--surface2)')+';color:'+(cs===false?'var(--red)':'var(--text2)')+'">No</button>'+
+        '<button onclick="editNutComida(null)" id="en-om" style="flex:1;padding:12px;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;border:2px solid '+(cs==null?'var(--accent)':'var(--border)')+';background:'+(cs==null?'var(--accent2)':'var(--surface2)')+';color:'+(cs==null?'var(--accent)':'var(--text2)')+'">Omitir</button>'+
+      '</div>'+
+      (sups.length?'<div class="lbl" style="margin-bottom:6px">🌿 Suplementos</div>'+supH+'<div style="margin-bottom:14px"></div>':'')+
+      (meds.length?'<div class="lbl" style="margin-bottom:6px;margin-top:4px">💊 Medicación</div>'+medH:'');
   } else if(editMod==='tension'){
     var tr=data.tension&&data.tension[fecha];
     var ents=tr&&Array.isArray(tr.entradas)?tr.entradas:[];
@@ -2315,6 +2349,42 @@ function renderEditFields(){
   set('edit-fields',h);
 }
 
+var editNutComidaVal = null;
+function togEditSup(s){
+  var fecha=el('edit-fecha').value||today();
+  if(!data.nutricion[fecha]) data.nutricion[fecha]={tomados:[],comidaSana:null};
+  var lista=data.nutricion[fecha].tomados||[];
+  var idx=lista.indexOf(s);
+  if(idx>=0) lista.splice(idx,1); else lista.push(s);
+  data.nutricion[fecha].tomados=lista;
+  saveD(); renderEditFields();
+  if(curTab==='anual') renderAnual(); else if(curTab==='dashboard') renderDash();
+}
+function togEditMed(med,n){
+  var fecha=el('edit-fecha').value||today();
+  if(!data.nutricion[fecha]) data.nutricion[fecha]={tomados:[],comidaSana:null};
+  var lista=data.nutricion[fecha].tomados||[];
+  var key=med+'|'+n, idx=lista.indexOf(key);
+  if(idx>=0) lista.splice(idx,1); else lista.push(key);
+  data.nutricion[fecha].tomados=lista;
+  saveD(); renderEditFields();
+  if(curTab==='anual') renderAnual(); else if(curTab==='dashboard') renderDash();
+}
+function editNutComida(v){
+  editNutComidaVal=v;
+  // Update button styles without re-rendering
+  var si=el('en-si'),no=el('en-no'),om=el('en-om');
+  if(!si) return;
+  si.style.borderColor=v===true?'var(--green)':'var(--border)';
+  si.style.background=v===true?'var(--green2)':'var(--surface2)';
+  si.style.color=v===true?'var(--green)':'var(--text2)';
+  no.style.borderColor=v===false?'var(--red)':'var(--border)';
+  no.style.background=v===false?'var(--red2)':'var(--surface2)';
+  no.style.color=v===false?'var(--red)':'var(--text2)';
+  om.style.borderColor=v==null?'var(--accent)':'var(--border)';
+  om.style.background=v==null?'var(--accent2)':'var(--surface2)';
+  om.style.color=v==null?'var(--accent)':'var(--text2)';
+}
 function saveEdit(){
   var fecha=el('edit-fecha').value||today();
   if(editMod==='peso'){
@@ -2331,11 +2401,17 @@ function saveEdit(){
   } else if(editMod==='animo'){
     var a=Math.min(5,Math.max(1,parseInt(el('ef-animo').value)||3));
     data.animo[fecha]={val:a,nota:el('ef-nota').value||''};
+  } else if(editMod==='nutricion'){
+    if(!data.nutricion[fecha]) data.nutricion[fecha]={tomados:[],comidaSana:null};
+    data.nutricion[fecha].comidaSana=editNutComidaVal;
+    // tomados already saved in real-time by togEditSup/togEditMed
   } else if(editMod==='ejercicio'){
     var mins=parseInt(el('ef-ejmin').value)||0;
-    var pasos=parseInt(el('ef-ejpasos').value)||0;
-    if(!mins&&!pasos){ alert('Introduce al menos duración o pasos'); return; }
-    data.ejercicio[fecha]={entradas:[{tipo:'Manual',duracion:mins,pasos:pasos}]};
+    var rawPasos=parseInt(el('ef-ejpasos').value)||0;
+    var pasos=prefs.caminaU==='metros'?d2p(rawPasos):rawPasos;
+    var tipo=el('ef-ejtipo').value.trim()||'Actividad';
+    if(!mins&&!pasos){ alert('Introduce al menos duración o '+caLbl()); return; }
+    data.ejercicio[fecha]={entradas:[{tipo:tipo,duracion:mins,pasos:pasos}]};
   } else if(editMod==='ayuno'){
     var ini=el('ef-ayini').value, fin=el('ef-ayfin').value;
     if(!ini||!fin){ alert('Introduce inicio y fin'); return; }
@@ -2352,16 +2428,17 @@ function saveEdit(){
     data.tension[fecha]={entradas:[{sis:sis,dia:dia,pul:parseInt(el('ef-pul').value)||0,hora:'manual'}]};
   }
   saveD();
-  // Refresh current page charts if affected
-  if(curTab==='dashboard') renderDash();
-  else renderPage(curTab);
-  // Show confirmation
+  // Refresh current page
+  if(curTab==='dashboard') renderDash(); else renderPage(curTab);
+  // Show confirmation then close
   var ok=el('edit-ok');
   if(ok){
     ok.style.display='block';
     setTimeout(function(){
       ok.style.display='none';
       closeEdit();
+      // Refresh again after closing in case curTab changed
+      if(curTab==='dashboard') renderDash(); else renderPage(curTab);
     },1200);
   }
 }
@@ -2571,6 +2648,27 @@ function renderRegSemana(mo){
       var ayd=data.ayuno[d];
       var ayents=ayd&&Array.isArray(ayd.entradas)?ayd.entradas:(ayd&&ayd.inicio?[ayd]:[]);
       if(ayents.length>1) extraCell='<div style="font-size:0.7rem;color:var(--text3);text-align:right">'+ayents.length+' ayunos</div>';
+    }
+    if(mo.k==='tension'&&val!==null){
+      var td2=data.tension[d];
+      var te=td2&&Array.isArray(td2.entradas)?td2.entradas:[];
+      var last=te.length?te[te.length-1]:{};
+      var cl=last.sis&&last.dia?(last.sis<120&&last.dia<80?'🟢':last.sis<130&&last.dia<85?'🟡':last.sis<140&&last.dia<90?'🟠':'🔴'):'';
+      extraCell='<div style="font-size:0.7rem;color:var(--text3);text-align:right">'+cl+(last.pul?' ♥ '+last.pul+' ppm':'')+'</div>';
+    }
+    if(mo.k==='meditacion'&&val!==null){
+      var mr2=data.meditacion[d];
+      var mrT=0; if(mr2&&Array.isArray(mr2.entradas)){for(var mk2=0;mk2<mr2.entradas.length;mk2++) mrT+=mr2.entradas[mk2].mins||0;}
+      if(mr2&&mr2.entradas&&mr2.entradas.length>1) extraCell='<div style="font-size:0.7rem;color:var(--text3);text-align:right">'+mr2.entradas.length+' sesiones</div>';
+    }
+    if(mo.k==='sol'&&val!==null){
+      var sr2=data.sol[d];
+      if(sr2&&Array.isArray(sr2.entradas)&&sr2.entradas.length>1) extraCell='<div style="font-size:0.7rem;color:var(--text3);text-align:right">'+sr2.entradas.length+' sesiones</div>';
+    }
+    if(mo.k==='comida'){
+      var nd2=data.nutricion[d]||{};
+      var sup2=(nd2.tomados||[]).filter(function(k){return k.indexOf('|')<0;});
+      if(sup2.length) extraCell='<div style="font-size:0.7rem;color:var(--green);text-align:right">+'+sup2.length+' supl.</div>';
     }
     th+='<tr style="border-top:1px solid var(--border)">'+
       '<td style="padding:8px 0;font-size:0.8rem;color:'+(isToday?'var(--accent)':'var(--text)')+';font-weight:'+(isToday?'700':'400')+'">'+
