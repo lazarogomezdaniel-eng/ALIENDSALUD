@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -108,6 +108,7 @@ input[type=range]{accent-color:var(--accent);padding:8px 0;height:36px;backgroun
 
 /* GRÁFICAS */
 .chartwrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.chartwrap[onclick]:active{transform:scale(0.98);opacity:0.85;transition:transform .1s,opacity .1s}
 canvas{display:block;width:100%}
 
 /* TABLA */
@@ -240,15 +241,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div class="stitle" style="margin:0;font-size:0.9rem">Evolución</div>
     <div id="rbtns" style="display:flex;gap:5px"></div>
   </div>
-  <div id="evo-peso" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">⚖ Peso (kg)</div><canvas id="ca-peso" height="80"></canvas></div>
-  <div id="evo-sueno" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">🌙 Sueño (h)</div><canvas id="ca-sueno" height="80"></canvas></div>
-  <div id="evo-agua" class="chartwrap"><div class="lbl" id="ca-agua-lbl" style="padding:0 4px 6px">💧 Agua</div><canvas id="ca-agua" height="80"></canvas></div>
-  <div id="evo-animo" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">😊 Ánimo /5</div><canvas id="ca-animo" height="80"></canvas></div>
-  <div id="evo-ejercicio" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">⚡ Ejercicio (min)</div><canvas id="ca-ejercicio" height="80"></canvas></div>
-  <div id="evo-meditacion" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">🧘 Meditación (min)</div><canvas id="ca-meditacion" height="80"></canvas></div>
-  <div id="evo-ayuno" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">⏲️ Ayuno (h)</div><canvas id="ca-ayuno" height="80"></canvas></div>
-  <div id="evo-sol" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">☀️ Sol (min)</div><canvas id="ca-sol" height="80"></canvas></div>
-  <div id="evo-tension" class="chartwrap"><div class="lbl" style="padding:0 4px 6px">🪀 Tensión (mmHg)</div><canvas id="ca-tension" height="80"></canvas></div>
+  <div id="evo-peso" class="chartwrap" onclick="goTab('peso')" style="cursor:pointer" title="Ir a peso"><div class="lbl" style="padding:0 4px 6px">⚖ Peso (kg)</div><canvas id="ca-peso" height="80"></canvas></div>
+  <div id="evo-sueno" class="chartwrap" onclick="goTab('sueno')" style="cursor:pointer" title="Ir a sueno"><div class="lbl" style="padding:0 4px 6px">🌙 Sueño (h)</div><canvas id="ca-sueno" height="80"></canvas></div>
+  <div id="evo-agua" class="chartwrap" onclick="goTab('agua')" style="cursor:pointer" title="Ir a agua"><div class="lbl" id="ca-agua-lbl" style="padding:0 4px 6px">💧 Agua</div><canvas id="ca-agua" height="80"></canvas></div>
+  <div id="evo-animo" class="chartwrap" onclick="goTab('animo')" style="cursor:pointer" title="Ir a animo"><div class="lbl" style="padding:0 4px 6px">😊 Ánimo /5</div><canvas id="ca-animo" height="80"></canvas></div>
+  <div id="evo-ejercicio" class="chartwrap" onclick="goTab('ejercicio')" style="cursor:pointer" title="Ir a ejercicio"><div class="lbl" style="padding:0 4px 6px">⚡ Ejercicio (min)</div><canvas id="ca-ejercicio" height="80"></canvas></div>
+  <div id="evo-meditacion" class="chartwrap" onclick="goTab('meditacion')" style="cursor:pointer" title="Ir a meditacion"><div class="lbl" style="padding:0 4px 6px">🧘 Meditación (min)</div><canvas id="ca-meditacion" height="80"></canvas></div>
+  <div id="evo-ayuno" class="chartwrap" onclick="goTab('ayuno')" style="cursor:pointer" title="Ir a ayuno"><div class="lbl" style="padding:0 4px 6px">⏲️ Ayuno (h)</div><canvas id="ca-ayuno" height="80"></canvas></div>
+  <div id="evo-sol" class="chartwrap" onclick="goTab('sol')" style="cursor:pointer" title="Ir a sol"><div class="lbl" style="padding:0 4px 6px">☀️ Sol (min)</div><canvas id="ca-sol" height="80"></canvas></div>
+  <div id="evo-tension" class="chartwrap" onclick="goTab('tension')" style="cursor:pointer" title="Ir a tension"><div class="lbl" style="padding:0 4px 6px">🪀 Tensión (mmHg)</div><canvas id="ca-tension" height="80"></canvas></div>
 </div>
 
 <div id="pg-peso" class="page">
@@ -273,7 +274,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
       </div>
   </div>
   <div class="chartwrap"><div class="lbl" style="padding:0 4px 6px">Peso 7 días</div><canvas id="cp" height="110"></canvas></div>
-  <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="pesohist"></div></div>
+<div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgPesoW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="peso-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgPesoW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="pesohist"></div>
+  </div>
 </div>
 
 <div id="pg-ejercicio" class="page">
@@ -327,7 +336,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   </div>
 
   <div class="chartwrap"><div class="lbl" id="pclbl" style="padding:0 4px 6px">Pasos 7 días</div><canvas id="cpa" height="100"></canvas></div>
-  <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="ejhist"></div></div>
+<div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgEjW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="ej-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgEjW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="ejhist"></div>
+  </div>
 </div>
 
 <div id="pg-sueno" class="page">
@@ -353,7 +370,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <button class="btn" onclick="saveSueno()">Registrar</button>
   </div>
   <div class="chartwrap"><div class="lbl" style="padding:0 4px 6px">Sueño 7 días (h)</div><canvas id="cs" height="100"></canvas></div>
-  <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="suenhist"></div></div>
+  <div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgSuenW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="suen-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgSuenW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="suenhist"></div>
+  </div>
   <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;font-size:0.75rem;color:var(--text3)">Recomendación: <span style="color:var(--accent)">7–9 horas</span> por noche</div>
 </div>
 
@@ -410,7 +435,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div id="animo-ok" style="display:none;text-align:center;color:var(--green);font-size:0.85rem;margin-top:8px;font-weight:600">✓ Guardado</div>
   </div>
   <div class="chartwrap"><div class="lbl" style="padding:0 4px 6px">Ánimo 7 días</div><canvas id="can" height="110"></canvas></div>
-  <div class="card"><div class="lbl" style="margin-bottom:6px">Notas de la semana</div><div id="animhist"></div></div>
+  <div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgAnimW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="anim-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgAnimW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="animhist"></div>
+  </div>
 </div>
 
 <div id="pg-ayuno" class="page">
@@ -456,7 +489,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
       <tr><td style="color:var(--accent);font-weight:600">5:2</td><td style="color:var(--text3);text-align:right">5 días normal, 2 restringido</td></tr>
     </tbody></table>
   </div>
-  <div class="card"><div class="lbl" style="margin-bottom:6px">Historial</div><div id="ayhist"></div></div>
+<div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgAyW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="ay-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgAyW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="ayhist"></div>
+  </div>
 </div>
 
 <div id="pg-nutricion" class="page">
@@ -505,7 +546,14 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
   <!-- Historial -->
   <div class="card">
     <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgNutW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="nut--week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgNutW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
     <div id="nuthist"></div>
+  </div>
   </div>
 </div>
 
@@ -566,8 +614,14 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 
   <!-- Historial -->
   <div class="card">
-    <div class="lbl" style="margin-bottom:8px">Historial</div>
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgMeditW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="medit--week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgMeditW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
     <div id="medit-hist"></div>
+  </div>
   </div>
 </div>
 
@@ -610,7 +664,15 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
     <div class="lbl" style="padding:0 4px 6px">Minutos 7 días</div>
     <canvas id="csol" height="100"></canvas>
   </div>
-  <div class="card"><div class="lbl" style="margin-bottom:8px">Historial</div><div id="solhist"></div></div>
+  <div class="card">
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgSolW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="sol-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgSolW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
+    <div id="solhist"></div>
+  </div>
 </div>
 
 <div id="pg-tension" class="page">
@@ -666,7 +728,12 @@ html.alto-contraste .nav-toggle{background:#111111!important;border-color:#fffff
 
   <!-- Historial -->
   <div class="card">
-    <div class="lbl" style="margin-bottom:8px">Historial</div>
+    <div class="lbl" style="margin-bottom:8px">Historial semanal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <button onclick="chgTensW(-1)" class="ybtn" style="padding:6px 14px;font-size:1rem">←</button>
+      <span id="tens-week-lbl" style="font-size:0.85rem;font-weight:700;color:var(--text2)">Esta semana</span>
+      <button onclick="chgTensW(1)" class="ybtn" style="padding:6px 14px;font-size:1rem">→</button>
+    </div>
     <div id="tenshist"></div>
   </div>
 </div>
@@ -1092,10 +1159,10 @@ function renderDash(){
   var hidden=prefs.hiddenTabs||[];
   function vis(id){ return hidden.indexOf(id)<0; }
   var dg='';
-  if(vis('peso'))    dg+='<div class="card"><div class="lbl">⚖ Peso</div><div class="val">'+(p?p.peso:'—')+'<span class="valu"> kg</span></div><div class="sub">IMC '+(p?p.imc:'—')+''+pdot+'</div></div>';
-  if(vis('sueno'))   dg+='<div class="card"><div class="lbl">🌙 Sueño</div><div class="val">'+(s?s.horas:'—')+'<span class="valu"> h</span></div><div class="sub">Calidad '+(s?s.calidad:'—')+'/5</div></div>';
-  if(vis('agua'))    dg+='<div class="card"><div class="lbl">💧 Agua</div><div class="val">'+v2d(vasos)+'<span class="valu"> '+agLbl()+'</span></div><div style="margin-top:5px;display:flex;gap:3px">'+dots+'</div></div>';
-  if(vis('animo'))   dg+='<div class="card"><div class="lbl">😊 Ánimo</div><div class="val" style="font-size:2rem">'+ME[mv]+'</div><div class="sub">'+ML[mv]+'</div></div>';
+  if(vis('peso'))    dg+='<div class="card" onclick="goTab(\'peso\')" style="cursor:pointer"><div class="lbl">⚖ Peso</div><div class="val">'+(p?p.peso:'—')+'<span class="valu"> kg</span></div><div class="sub">IMC '+(p?p.imc:'—')+''+pdot+'</div></div>';
+  if(vis('sueno'))   dg+='<div class="card" onclick="goTab(\'sueno\')" style="cursor:pointer"><div class="lbl">🌙 Sueño</div><div class="val">'+(s?s.horas:'—')+'<span class="valu"> h</span></div><div class="sub">Calidad '+(s?s.calidad:'—')+'/5</div></div>';
+  if(vis('agua'))    dg+='<div class="card" onclick="goTab(\'agua\')" style="cursor:pointer"><div class="lbl">💧 Agua</div><div class="val">'+v2d(vasos)+'<span class="valu"> '+agLbl()+'</span></div><div style="margin-top:5px;display:flex;gap:3px">'+dots+'</div></div>';
+  if(vis('animo'))   dg+='<div class="card" onclick="goTab(\'animo\')" style="cursor:pointer"><div class="lbl">😊 Ánimo</div><div class="val" style="font-size:2rem">'+ME[mv]+'</div><div class="sub">'+ML[mv]+'</div></div>';
   set('dash-grid', dg);
 
   var ejRaw=data.ejercicio[t]||null;
@@ -1153,19 +1220,19 @@ function renderDash(){
     if(ayActivo){ ayTxt='\u23f3 En curso desde '+ayStart; ayCol='var(--accent)'; }
     else if(ayEnt.length===1){ ayTxt='\u2713 '+ayEnt[0].inicio+' \u2192 '+ayEnt[0].fin+' ('+calcDuracion(ayEnt[0].inicio,ayEnt[0].fin)+')'; }
     else{ ayTxt='\u2713 '+ayEnt.length+' ayunos hoy'; }
-    ayH='<div class="card"><div class="lbl">\u25f7 Ayuno</div><div style="font-size:0.85rem;color:'+ayCol+';margin-top:4px">'+ayTxt+'</div></div>';
+    ayH='<div class="card" onclick="goTab(\'ayuno\')" style="cursor:pointer"><div class="lbl">\u25f7 Ayuno</div><div style="font-size:0.85rem;color:'+ayCol+';margin-top:4px">'+ayTxt+'</div></div>';
   }
 
   var de='';
-  if(vis('ejercicio')) de+='<div class="card"><div class="lbl">⚡ Entreno hoy</div>'+ejH+'</div>';
+  if(vis('ejercicio')) de+='<div class="card" onclick="goTab(\'ejercicio\')" style="cursor:pointer"><div class="lbl">⚡ Entreno hoy</div>'+ejH+'</div>';
   if(vis('ayuno'))     de+=ayH;
-  if(vis('nutricion')) de+='<div class="card"><div class="lbl" style="margin-bottom:8px">🥗 ¿Comiste sano?</div><div style="display:flex;gap:8px">'+
-      '<button class="'+csiC+'" onclick="dashComida(true)">✓<div style="font-size:0.7rem;margin-top:3px">Sí</div></button>'+
-      '<button class="'+cnoC+'" onclick="dashComida(false)">✗<div style="font-size:0.7rem;margin-top:3px">No</div></button>'+
-      '<button class="'+comC+'" onclick="dashComida(null)">—<div style="font-size:0.7rem;margin-top:3px">Omitir</div></button>'+
-    '</div></div>';
-  if(vis('nutricion')) de+='<div class="card"><div class="lbl">🌿 Suplementos</div><div style="margin-top:4px">'+supH+'</div></div>';
-  if(vis('nutricion')&&meds.length>0) de+='<div class="card"><div class="lbl">\uD83D\uDC8A Medicación</div><div style="margin-top:4px">'+medH+'</div></div>';
+  if(vis('nutricion')) de+='<div class="card" onclick="goTab(\'nutricion\')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;align-items:center"><div class="lbl" style="margin-bottom:0">🥗 Comida</div><div style="display:flex;gap:6px">'+
+      '<button class="'+csiC+'" onclick="dashComida(true)" style="padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit">✓ Sí</button>'+
+      '<button class="'+cnoC+'" onclick="dashComida(false)" style="padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit">✗ No</button>'+
+      '<button class="'+comC+'" onclick="dashComida(null)" style="padding:6px 12px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit">—</button>'+
+    '</div></div></div>';
+  if(vis('nutricion')) de+='<div class="card" onclick="goTab(\'nutricion\')" style="cursor:pointer"><div class="lbl">🌿 Suplementos</div><div style="margin-top:4px">'+supH+'</div></div>';
+  if(vis('nutricion')&&meds.length>0) de+='<div class="card" onclick="goTab(\'nutricion\')" style="cursor:pointer"><div class="lbl">\uD83D\uDC8A Medicación</div><div style="margin-top:4px">'+medH+'</div></div>';
   set('dash-extra', de);
 
   // range buttons
@@ -1246,11 +1313,12 @@ function renderPeso(){
     setText('imccat',imcCat(p.imc));
   } else { el('pesohoy').style.display='none'; }
   drawLine('cp', getDays(7).map(function(d){ return {l:fmt(d),v:data.peso[d]?data.peso[d].peso:null}; }), '#5C4FF6');
-  var days=getDays(7), h='', found=false;
+  var days=getWeekDays(pesoWOff), h='', found=false;
   for(var i=0;i<days.length;i++){
     var d=days[i]; if(!data.peso[d]) continue; found=true;
     h+='<div class="hrow"><div style="display:flex;justify-content:space-between"><span style="color:var(--text2)">'+fmt(d)+'</span><span>'+data.peso[d].peso+' kg</span><span style="color:var(--text3)">IMC '+data.peso[d].imc+' '+imcCat(data.peso[d].imc)+'</span></div></div>';
   }
+  var wlblpesoWOff=el('peso-week-lbl'); if(wlblpesoWOff) wlblpesoWOff.textContent=weekLbl(pesoWOff);
   set('pesohist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin registros</span>');
 }
 
@@ -1394,7 +1462,7 @@ function renderEj(){
     return {l:fmt(day),v:p2d(dd.pasos||0)};
   }), '#5C4FF6');
   // Historial 7 días
-  var ejDays=getDays(7), ejH='', ejFound=false;
+  var ejDays=getWeekDays(ejWOff), ejH='', ejFound=false;
   for(var di=ejDays.length-1;di>=0;di--){
     var ejD=ejDays[di], ejR=data.ejercicio[ejD];
     if(!ejR) continue;
@@ -1413,7 +1481,8 @@ function renderEj(){
     }
     ejH+='</div>';
   }
-  if(el('ejhist')) set('ejhist', ejFound?ejH:'<span style="color:var(--text3);font-size:0.85rem">Sin registros aún</span>');
+  var wlblejWOff=el('ej-week-lbl'); if(wlblejWOff) wlblejWOff.textContent=weekLbl(ejWOff);
+  set('ejhist', ejFound?ejH:'<span style="color:var(--text3);font-size:0.85rem">Sin registros aún</span>');
 }
 
 
@@ -1450,14 +1519,43 @@ function borrarHoy(modulo, renderFn){
   if(renderFn && typeof window[renderFn]==='function') window[renderFn]();
 }
 
+
+var pesoWOff=0, ejWOff=0, ayWOff=0, meditWOff=0, nutWOff=0, solWOff=0, tensWOff=0;
+function chgPesoW(d){ pesoWOff=Math.min(0,pesoWOff+d); renderPeso(); }
+function chgEjW(d){   ejWOff=Math.min(0,ejWOff+d);     renderEj(); }
+function chgAyW(d){   ayWOff=Math.min(0,ayWOff+d);     renderAyuno(); }
+function chgMeditW(d){ meditWOff=Math.min(0,meditWOff+d); renderMedit(); }
+function chgNutW(d){  nutWOff=Math.min(0,nutWOff+d);   renderNut(); }
+function chgSolW(d){  solWOff=Math.min(0,solWOff+d);   renderSol(); }
+function chgTensW(d){ tensWOff=Math.min(0,tensWOff+d); renderTension(); }
+var suenWOff=0;
+function chgSuenW(d){
+  suenWOff=Math.min(0, suenWOff+d);
+  renderSueno();
+}
+function getWeekDays(off){
+  var days=[], base=new Date();
+  base.setDate(base.getDate() + off*7);
+  // Go back to start of 7-day window
+  for(var i=6;i>=0;i--){
+    var d=new Date(base); d.setDate(base.getDate()-i);
+    days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));
+  }
+  return days;
+}
+function weekLbl(off){
+  if(off===0) return 'Esta semana';
+  if(off===-1) return 'Semana pasada';
+  return 'Hace '+Math.abs(off)+' semanas';
+}
 function renderSueno(){
   var t=today(), s=data.sueno[t];
   var hoy=el('suenhoy');
-  if(s){ hoy.style.display='block'; setText('suenhoy-val', s.horas+' h \u00b7 calidad '+s.calidad+'/5'); }
+  if(s){ hoy.style.display='block'; setText('suenhoy-val', s.horas+' h · calidad '+s.calidad+'/5'); }
   else  { hoy.style.display='none'; }
   drawBar('cs', getDays(7).map(function(d){ return {l:fmt(d),v:data.sueno[d]?data.sueno[d].horas:0}; }), '#5C4FF6');
-  var SCAL=['\u2014','\ud83d\ude34','\ud83d\ude15','\ud83d\ude10','\ud83d\ude42','\u2b50'];
-  var days=getDays(7), h='', found=false;
+  var SCAL=['—','😴','😕','😐','🙂','⭐'];
+  var days=getWeekDays(suenWOff), h='', found=false;
   for(var i=days.length-1;i>=0;i--){
     var d=days[i]; if(!data.sueno[d]) continue; found=true;
     var sd=data.sueno[d];
@@ -1468,8 +1566,12 @@ function renderSueno(){
       '<span style="color:var(--text3);font-size:0.75rem">cal. '+sd.calidad+'/5</span>'+
     '</div>';
   }
-  set('suenhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin registros</span>');
+  // disable forward arrow if at current week
+  var fwdBtn=el('suen-week-lbl'); 
+  if(fwdBtn) fwdBtn.textContent=weekLbl(suenWOff);
+  set('suenhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin registros esta semana</span>');
 }
+
 
 // ── AGUA ─────────────────────────────────────────
 function setAU(u){ prefs.aguaU=u; saveP(); renderAgua(); }
@@ -1480,7 +1582,6 @@ function addAg(n){
 function setAg(n){ data.agua[today()]={vasos:n}; saveD(); renderAgua(); }
 function renderAgua(){
   var t=today(), vasos=(data.agua[t]&&data.agua[t].vasos)||0, isL=prefs.aguaU==='litros';
-  var db=el('aguadelbtn'); if(db) db.style.display=vasos>0?'inline-block':'none';
   setText('aglbl2',isL?'Litros hoy':'Vasos hoy (250 ml)');
   setText('agdisp',v2d(vasos));
   setText('agunit',agLbl());
@@ -1517,7 +1618,7 @@ function saveAnimo(){
   var nota=el('animonota').value||'';
   data.animo[today()]={val:animV,nota:nota}; saveD();
   // Update historial inline without re-rendering whole page
-  var days=getDays(14), h='', found=false, i;
+  var days=getWeekDays(animWOff), h='', found=false, i;
   for(i=0;i<days.length;i++){
     var d=days[i]; if(!data.animo[d]||!data.animo[d].nota) continue; found=true;
     var em=MOODS[data.animo[d].val-1]?MOODS[data.animo[d].val-1].e:'';
@@ -1527,6 +1628,11 @@ function saveAnimo(){
   drawLine('can', getDays(7).map(function(d){ return {l:fmt(d),v:data.animo[d]?data.animo[d].val:null}; }), '#5C4FF6');
   var ok=el('animo-ok');
   if(ok){ ok.style.display='block'; setTimeout(function(){ ok.style.display='none'; },2000); }
+}
+var animWOff=0;
+function chgAnimW(d){
+  animWOff=Math.min(0, animWOff+d);
+  renderAnimo();
 }
 function renderAnimo(){
   var t=today(), an=data.animo[t];
@@ -1539,14 +1645,17 @@ function renderAnimo(){
   set('moodrow',mh);
   setText('moodlbl', MOODS[animV-1]?MOODS[animV-1].l:'');
   drawLine('can', getDays(7).map(function(d){ return {l:fmt(d),v:data.animo[d]?data.animo[d].val:null}; }), '#5C4FF6');
-  var days=getDays(14), h='', found=false;
-  for(i=0;i<days.length;i++){
+  // Notas con navegación semanal
+  var days=getWeekDays(animWOff), h='', found=false;
+  for(i=days.length-1;i>=0;i--){
     var d=days[i]; if(!data.animo[d]||!data.animo[d].nota) continue; found=true;
     var em=MOODS[data.animo[d].val-1]?MOODS[data.animo[d].val-1].e:'';
     h+='<div class="hrow"><span style="color:var(--text3);margin-right:8px">'+fmt(d)+'</span>'+em+' <span style="color:var(--text2);margin-left:6px">'+data.animo[d].nota+'</span></div>';
   }
-  set('animhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin notas</span>');
+  var wlbl=el('anim-week-lbl'); if(wlbl) wlbl.textContent=weekLbl(animWOff);
+  set('animhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin notas esta semana</span>');
 }
+
 
 // ── AYUNO ────────────────────────────────────────
 var ayActivo=false, ayStart='';
@@ -1645,7 +1754,7 @@ function renderAyuno(){
   };
 
   // historial 7 días
-  var days=getDays(7), h='', found=false;
+  var days=getWeekDays(ayWOff), h='', found=false;
   for(var j=0;j<days.length;j++){
     var day=days[j], dd=data.ayuno[day]; if(!dd) continue;
     var ents=Array.isArray(dd.entradas)?dd.entradas:(dd.inicio?[dd]:[]);
@@ -1657,6 +1766,7 @@ function renderAyuno(){
     }
     h+='</div>';
   }
+  var wlblayWOff=el('ay-week-lbl'); if(wlblayWOff) wlblayWOff.textContent=weekLbl(ayWOff);
   set('ayhist', found?h:'<span style="color:var(--text3);font-size:0.8rem">Sin registros</span>');
 }
 
@@ -1742,7 +1852,7 @@ function renderMed(){
   set('medtomas', th);
   setText('medprog', meds.length?(done+' de '+total+' tomas completadas hoy'):'');
 
-  var days=getDays(7), hist='', found=false;
+  var days=getWeekDays(nutWOff), hist='', found=false;
   for(i=days.length-1;i>=0;i--){
     var d=days[i], tom=(data.nutricion[d]&&data.nutricion[d].tomados)||[];
     var medTom=tom.filter(function(k){ return meds.some(function(m){ return k.indexOf(m+'|')===0; }); });
@@ -1813,10 +1923,10 @@ function renderNut(){
   // grid de medicamentos (reutiliza renderMed)
   renderMed();
   // historial fusionado
-  var hh='', found=false;
+  var nutHistDays=getWeekDays(nutWOff), hh='', found=false;
   var meds=prefs.medLista||[];
-  for(i=0;i<days7.length;i++){
-    var d=days7[i], nd=data.nutricion[d]||{};
+  for(i=0;i<nutHistDays.length;i++){
+    var d=nutHistDays[i], nd=data.nutricion[d]||{};
     var tom=nd.tomados||[];
     var sups=tom.filter(function(k){ return k.indexOf('|')<0; });
     var medTom=tom.filter(function(k){ return k.indexOf('|')>=0; });
@@ -1839,6 +1949,7 @@ function renderNut(){
     }
     hh+='</div>';
   }
+  var wlblnutWOff=el('nut--week-lbl'); if(wlblnutWOff) wlblnutWOff.textContent=weekLbl(nutWOff);
   set('nuthist', found?hh:'<span style="color:var(--text3);font-size:0.8rem">Sin registros</span>');
 }
 
@@ -1950,8 +2061,8 @@ function renderMedit(){
     return {l:fmt(day),v:(r.estado==='hecho'?r.mins:0)};
   }), '#5C4FF6');
 
-  // historial 14 días
-  var days=getDays(14), hist='', found=false;
+  // historial semanal
+  var days=getWeekDays(meditWOff), hist='', found=false;
   for(var di=days.length-1;di>=0;di--){
     var day2=days[di], r2=data.meditacion[day2]; if(!r2) continue;
     var dayMins=0;
@@ -1965,6 +2076,7 @@ function renderMedit(){
       '<span style="font-size:0.85rem;font-weight:700;color:var(--green)">'+dayMins+' min</span>'+
     '</div>';
   }
+  var wlblmeditWOff=el('medit--week-lbl'); if(wlblmeditWOff) wlblmeditWOff.textContent=weekLbl(meditWOff);
   set('medit-hist', found?hist:'<span style="color:var(--text3);font-size:0.8rem">Sin registros aún</span>');
 }
 
@@ -2032,7 +2144,8 @@ function renderSol(){
     return {l:fmt(day),v:r.mins||0};
   }), '#F59E0B');
 
-  var days=getDays(14), hist='', found=false;
+  var days=getWeekDays(solWOff), hist='', found=false;
+  var wlblsol=el('sol-week-lbl'); if(wlblsol) wlblsol.textContent=weekLbl(solWOff);
   for(var di=days.length-1;di>=0;di--){
     var day2=days[di], r2=data.sol[day2]; if(!r2) continue;
     var dayMins=0;
@@ -2121,9 +2234,10 @@ function renderTension(){
   }));
 
   // Historial
-  var hist='', found=false;
-  for(var di=days.length-1;di>=0;di--){
-    var day=days[di], r=data.tension[day];
+  var histDays=getWeekDays(tensWOff), hist='', found=false;
+  var wlbltens=el('tens-week-lbl'); if(wlbltens) wlbltens.textContent=weekLbl(tensWOff);
+  for(var di=histDays.length-1;di>=0;di--){
+    var day=histDays[di], r=data.tension[day];
     if(!r||!Array.isArray(r.entradas)||!r.entradas.length) continue;
     found=true;
     hist+='<div class="hrow">';
@@ -2955,6 +3069,17 @@ function importJSON(e){
 })();
 
 // ── INIT ─────────────────────────────────────────
+applyPageBg('dashboard');
+setText('hdate', new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'}));
+initNav();
+renderDash();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+// ── INIT ───────────────────────────────────────────────
 applyPageBg('dashboard');
 setText('hdate', new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'}));
 initNav();
